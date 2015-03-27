@@ -16,6 +16,9 @@
 	    program.help();
 	} else {
 
+		var argsArray = program.args.toString().split(',');
+
+
 	    ////////////////////////////////////////////////
 	    // all
 	    var allAction = function(boolSetAction){
@@ -27,17 +30,14 @@
 				}
 			});
 	    };
-	    var selectAction = function(boolSetAction,hueId){
-	    	hue.lights(function(lights){
-				for(i in lights){
-					if(lights.hasOwnProperty(i) && !hueId.indexOf(lights[i].id)){
-			        	hue.change(lights[i].set({'on': boolSetAction}));
-					}
-				}
-			});
-	    }
 
-		var argsArray = program.args.toString().split(',');
+	    var selectAction = function(boolSetAction,hueId){
+			for(i in hueId){
+				hue.light(hueId[i], function(light){
+		        	hue.change(light.set({'on': boolSetAction}));
+    			});
+			}
+	    }
 
 		// turn off
 	    if(argsArray[0] == 'off'){
@@ -60,5 +60,18 @@
 		    }
 	    }
 	    ////////////////////////////////////////////////
+
+	    // color
+	    if(argsArray[0] == 'color'){
+	    	if(argsArray[1] >= 1 && argsArray[1] <= 3){
+	    		if(argsArray.length == 5){
+	    			rgbArray = [~~argsArray[2],~~argsArray[3],~~argsArray[4]];
+	    			console.log(rgbArray);
+	    			hue.light(argsArray[1], function(light){
+	    				hue.change(light.set({"on":true,"rgb":rgbArray}));
+	    			});
+	    		}
+	    	}
+	    }
 	}
 })();
